@@ -45,69 +45,34 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cardSprites:
-  - {fileID: 21300000, guid: fbf6d86e88e83ca4ca2095454cf77b5a, type: 3}
-  - {fileID: 21300000, guid: fbf98bafa314d9844bffc566ad182ef3, type: 3}
-  - {fileID: 21300000, guid: a79390d4cc334f34c9a1cd33103662db, type: 3}
-  - {fileID: 21300000, guid: ac895816bda99fb49a0e2e1d711e1926, type: 3}
-  - {fileID: 21300000, guid: 227ff6ccab70c77438b83c34715115da, type: 3}
-  - {fileID: 21300000, guid: 254777002f128c24f98c5d35b06dd630, type: 3}
-  - {fileID: 21300000, guid: 8808f94a1e358b345a9687c5e8cb2149, type: 3}
-  - {fileID: 21300000, guid: 5f0988e4bb3501849865ed81e311db11, type: 3}
-  - {fileID: 21300000, guid: 68c6a611892b0574b84d78ba17a13511, type: 3}
-  - {fileID: 21300000, guid: 6d8082590cbbce7478ca666d5e9d6191, type: 3}
-  - {fileID: 21300000, guid: 1e3e74e3519bdcc47a2b9ef4739eaa01, type: 3}
-  - {fileID: 21300000, guid: e68258bef741be34881b64dfddb95df2, type: 3}
-  - {fileID: 21300000, guid: 86343e6782f85e549bf11e5ddd505642, type: 3}
-  - {fileID: 21300000, guid: 95595fc6418c6b94abf356e789387660, type: 3}
-  - {fileID: 21300000, guid: fc098f292a19c7e4283b1b0abb51dcfa, type: 3}
-  - {fileID: 21300000, guid: a30eb6dc35745f749b6ed9bb49751c7a, type: 3}
-  - {fileID: 21300000, guid: fece7f9171538eb41a4ac8f9cd804bef, type: 3}
-  - {fileID: 21300000, guid: 3b5d30e8ad5c9f046aa564129c189842, type: 3}
-  - {fileID: 21300000, guid: 1c9e42a9b7ba0a54eb55169ff0d73f45, type: 3}
-  - {fileID: 21300000, guid: f5b73c20799ca444e985be7621ca15f4, type: 3}
-  - {fileID: 21300000, guid: bf3612c52e0c70d4ba9ce74f5be6af59, type: 3}
-  - {fileID: 21300000, guid: ee2367c8737b5e44182b3cf47387dd77, type: 3}
-  - {fileID: 21300000, guid: 827bcf49bbe9c8c45a16de1127c07bbb, type: 3}
-  - {fileID: 21300000, guid: ffd15f10b01bd5a4daeeeb1a394d9729, type: 3}
-  - {fileID: 21300000, guid: 1f1466ac183964249952640bdc73d0c4, type: 3}
-  - {fileID: 21300000, guid: 63eb1fd33a84a2e4584d2f74e1dfdc93, type: 3}
-  - {fileID: 21300000, guid: 7e74a79a25ac3f34ba11b34f74307d40, type: 3}
-  - {fileID: 21300000, guid: 0860d2cfcc1fe8b428e6a4bbf44355ba, type: 3}
-  - {fileID: 21300000, guid: c9fa04272c1954f4fa7c8d9f2a258df7, type: 3}
-  - {fileID: 21300000, guid: 141ef52f1a43a88489106ff5c04aade9, type: 3}
-  - {fileID: 21300000, guid: a54befd1e5d7ca143883bcc9afc84370, type: 3}
-  - {fileID: 21300000, guid: 2d6fd0e39cb82bf43910b33384cae5fa, type: 3}
-  - {fileID: 21300000, guid: 5b1164554deb3974b9dec0153fa8408d, type: 3}
-  - {fileID: 21300000, guid: b8f541412b6155c4db4953345b6b0a56, type: 3}
-  - {fileID: 21300000, guid: ba21b938ca1f081488d6f0a3d8586960, type: 3}
-  - {fileID: 21300000, guid: 41db666fe90795e4cb498da202814d75, type: 3}
-  - {fileID: 21300000, guid: fad19e40556424442b625bc047e0328c, type: 3}
-  - {fileID: 21300000, guid: d06f78f2cf7ddf946b3e85b737a23986, type: 3}
-  - {fileID: 21300000, guid: 9bacf34de7c64d34f8651a9557c3a0a8, type: 3}
-  - {fileID: 21300000, guid: b1ca47450a999284185c18b9a1018e21, type: 3}
-  - {fileID: 21300000, guid: d839ebc544f3b6548afefd662a5c9c41, type: 3}
-  - {fileID: 21300000, guid: 49a21f7fcb9b40a4d93416a83ff240c3, type: 3}
-  - {fileID: 21300000, guid: f1ad8ab59044c5e4eb763b227b18f0cb, type: 3}
-  - {fileID: 21300000, guid: 305cdd0ff2cd67f4d88b941fec768850, type: 3}
-  - {fileID: 21300000, guid: fbcff3180371ceb4cb9bcd2e7bbc8d88, type: 3}
-  - {fileID: 21300000, guid: 543a0e2ad2383384bb156f1b2091e0d3, type: 3}
-  - {fileID: 21300000, guid: 4b52b3c29c4513e468e75d2580a93712, type: 3}
-  - {fileID: 21300000, guid: c87fabdb2a5bf264487ccdf0d013768e, type: 3}
-  - {fileID: 21300000, guid: d669f8cdd3e54d24991e1cd0c955c053, type: 3}
-  - {fileID: 21300000, guid: cc70696d5bff5a043a7f095566308639, type: 3}
-  - {fileID: 21300000, guid: 37e6e9703d2714043be5db8840e642c4, type: 3}
-  - {fileID: 21300000, guid: 4c5d706395d78854291f498238207218, type: 3}
-  initialCards: 5
+  - {fileID: 21300000, guid: 0c68140bd48b63645b6abbb9536a8a4b, type: 3}
+  - {fileID: 21300000, guid: db8a5be74b26f2840bcfad7653174638, type: 3}
+  - {fileID: 21300000, guid: c8bf94bacf2eb78469631db8014e243c, type: 3}
+  - {fileID: 21300000, guid: ffb1751b19f5bfc459f6e4e75cfc052c, type: 3}
+  - {fileID: 21300000, guid: 17621cf9db09bc04589f27a2bf59f62e, type: 3}
+  - {fileID: 21300000, guid: 2a39cdf4f3eb3104089bc9c923bda4bf, type: 3}
+  - {fileID: 21300000, guid: 5b5cd908e9f6cbb42848b59f01747b87, type: 3}
+  - {fileID: 21300000, guid: 05e71061175c3fd4daf1e82967f2548c, type: 3}
+  - {fileID: 21300000, guid: 2392840e7a22ce64298a49a5e6327668, type: 3}
+  - {fileID: 21300000, guid: 2ee37da877eb8fb4e8df0ac50347d2a9, type: 3}
+  - {fileID: 21300000, guid: fc09e5ab028bed14086326bad5ce6736, type: 3}
+  - {fileID: 21300000, guid: 1e700a2998fa45e438bfa13790a8f8b4, type: 3}
+  - {fileID: 21300000, guid: 4ab49ec328626a34396febef07881c5c, type: 3}
+  - {fileID: 21300000, guid: 2bdcc4c2f14e7dc4c98eb44802224f0d, type: 3}
   cardPrefab: {fileID: 5637464111694728669, guid: 2cb4d6d3e5e28de43847d00d288e083d, type: 3}
   cardParent: {fileID: 0}
+  explosionPrefab: {fileID: 7368311503550883571, guid: 5d2e095fa1516224a891de3b17a6585a, type: 3}
+  initialPairs: 5
   columns: 5
-  spacing: 0.4
+  spacing: 0.8
   initialPauseTime: 2
   initialShowTime: 5
   clickSound: {fileID: 8300000, guid: fe3d44841015f9e4c86eef4a47026ede, type: 3}
   matchSound: {fileID: 8300000, guid: 73a9a09c110e61442966147e715c5a99, type: 3}
   mismatchSound: {fileID: 8300000, guid: 842e9e07bb128334c91a5548c7858a98, type: 3}
-  introMusic: {fileID: 8300000, guid: 824d3f1c48487fd42a0d6b3f82c25c7d, type: 3}
+  secondSound: {fileID: 8300000, guid: 15f9a577f1751ad439ad8ec63921be17, type: 3}
+  goVoice: {fileID: 8300000, guid: e1a1d5ebe1b847c49a974ea248d7dff4, type: 3}
+  introMusic: {fileID: 8300000, guid: d0d377bb7e371d14b8749151269b5ec9, type: 3}
   sceneMusic: {fileID: 8300000, guid: fb32039689d477a449eb45f372d23fac, type: 3}
   victoryMusic: {fileID: 8300000, guid: 56acee33f464a8f45bbca4948612380d, type: 3}
   FXAudioSource: {fileID: 0}
@@ -118,5 +83,6 @@ MonoBehaviour:
   UIGetReady: {fileID: 0}
   UITimer: {fileID: 0}
   timerText: {fileID: 0}
-  explosionPrefab: {fileID: 7368311503550883571, guid: 5d2e095fa1516224a891de3b17a6585a, type: 3}
+  UICountdown: {fileID: 0}
+  countdownText: {fileID: 0}
   playerCanClick: 0
