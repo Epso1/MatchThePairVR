@@ -54,6 +54,7 @@ public class GameManager : MonoBehaviour
     bool isTimeRunning = false;
     int gameLevel = 1;
     int maxLevel = 5;
+    float levelMaxTime = 0f;
 
     void Start()
     {
@@ -90,6 +91,7 @@ public class GameManager : MonoBehaviour
         else { columns = 6; }
 
         initialShowTimeSeconds = initialPairs; // Establecer el tiempo de previsualización de las cartas con el valor de la cantidad de parejas 
+        levelMaxTime = initialPairs * 5;
     }
     public void StartTimer()
     {
