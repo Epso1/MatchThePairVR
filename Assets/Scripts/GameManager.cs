@@ -67,6 +67,10 @@ public class GameManager : MonoBehaviour
             elapsedTime += Time.deltaTime;
             UpdateTimerText(elapsedTime);
         }
+        if (elapsedTime >= levelMaxTime)
+        {
+            LevelFailed();
+        }
     }
     private void InitializeGameLevel()
     {      
@@ -91,7 +95,7 @@ public class GameManager : MonoBehaviour
         else { columns = 6; }
 
         initialShowTimeSeconds = initialPairs; // Establecer el tiempo de previsualización de las cartas con el valor de la cantidad de parejas 
-        levelMaxTime = initialPairs * 5;
+        levelMaxTime = initialPairs * 5; //Establecer el tiempo máximo para completar el nivel
     }
     public void StartTimer()
     {
@@ -301,4 +305,8 @@ public class GameManager : MonoBehaviour
         UICountdown.SetActive(false);
     }
 
+    void LevelFailed()
+    {
+
+    }
 }
