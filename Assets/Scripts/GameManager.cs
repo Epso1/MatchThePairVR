@@ -36,12 +36,13 @@ public class GameManager : MonoBehaviour
     [Header("UI")]
     [SerializeField] GameObject UIStart;
     [SerializeField] GameObject UIVictory;
+    [SerializeField] GameObject UIDefeated;
     [SerializeField] Text timeResultText;
     [SerializeField] GameObject UIGetReady;
     [SerializeField] GameObject UITimer;
     [SerializeField] Text timerText;
     [SerializeField] GameObject UICountdown;
-    [SerializeField] Text countdownText; 
+    [SerializeField] Text countdownText;
 
     [Header("Private variables")]
     [HideInInspector] public bool playerCanClick = false;
@@ -53,36 +54,42 @@ public class GameManager : MonoBehaviour
     float elapsedTime = 0f;
     bool isTimeRunning = false;
     int gameLevel = 1;
-    int maxLevel = 5;
+    int maxLevel = 4;
     float levelMaxTime = 0f;
 
     void Start()
     {
-       InitializeGameLevel();  // Inicializa el nivel
+        InitializeGameLevel();  // Inicializa el nivel
     }
+
     private void Update()
     {
         if (isTimeRunning) // Si el tiempo está corriendo, actualiza el temporizador
         {
             elapsedTime += Time.deltaTime;
             UpdateTimerText(elapsedTime);
-        }
-        if (elapsedTime >= levelMaxTime)
-        {
-            LevelFailed();
+
+            // Cuando el tiempo transcurrido sea mayor o igual a levelMaxTime, se ejecuta LevelFailed
+            if (elapsedTime >= levelMaxTime)
+            {
+                StopTimer();
+                LevelFailed();
+            }
         }
     }
+
     private void InitializeGameLevel()
-    {      
+    {
         // Desactivar UI
         UIVictory.SetActive(false);
         UIGetReady.SetActive(false);
         UICountdown.SetActive(false);
         UITimer.SetActive(false);
+        UIDefeated.SetActive(false);
 
         if (gameLevel == 1) // Reproducir la música de introducción y activar UIStart si es el primer nivel de juego
-        { 
-            UIStart.SetActive(true); 
+        {
+            UIStart.SetActive(true);
             PlayMusic(introMusic, 0.5f, true);
         }
         else // Incrementar la cantidad de parejas iniciales
@@ -91,12 +98,12 @@ public class GameManager : MonoBehaviour
         }
 
         // Establecer el número de columnas
-        if (initialPairs <= 6) { columns = initialPairs; }
-        else { columns = 6; }
+        columns = initialPairs;
 
         initialShowTimeSeconds = initialPairs; // Establecer el tiempo de previsualización de las cartas con el valor de la cantidad de parejas 
-        levelMaxTime = initialPairs * 5; //Establecer el tiempo máximo para completar el nivel
+        levelMaxTime = initialPairs * 5; // Establecer el tiempo máximo para completar el nivel
     }
+
     public void StartTimer()
     {
         elapsedTime = 0f;
@@ -107,17 +114,24 @@ public class GameManager : MonoBehaviour
     {
         isTimeRunning = false;
     }
+
+    // Se actualiza el timerText para mostrar el tiempo restante
     private void UpdateTimerText(float time)
     {
-        int minutes = Mathf.FloorToInt(time / 60);
-        int seconds = Mathf.FloorToInt(time % 60);
+        float remainingTime = levelMaxTime - time;
+        if (remainingTime < 0)
+            remainingTime = 0;
+
+        int minutes = Mathf.FloorToInt(remainingTime / 60);
+        int seconds = Mathf.FloorToInt(remainingTime % 60);
         timerText.text = string.Format("{0:0}:{1:00}", minutes, seconds);
     }
+
     private void UpdateTimeResultText(float time)
     {
         int minutes = Mathf.FloorToInt(time / 60);
         int seconds = Mathf.FloorToInt(time % 60);
-        timeResultText.text = "YOUR TIME: " + string.Format("{0:0}:{1:00}", minutes, seconds);
+        timeResultText.text = "YOUR REMAINING TIME: " + string.Format("{0:0}:{1:00}", minutes, seconds);
     }
 
     void CreateDeck()
@@ -143,7 +157,7 @@ public class GameManager : MonoBehaviour
             int k = rng.Next(n + 1);
             (deck[k], deck[n]) = (deck[n], deck[k]); // Cambiar orden (swap)
         }
-      
+
         currentCards = deck.ToArray();  // Convertir a array
         InstantiateDeck(); // Instanciar el mazo
     }
@@ -241,14 +255,14 @@ public class GameManager : MonoBehaviour
                 UITimer.SetActive(false);
                 StopTimer();
                 UIVictory.SetActive(true);
-                UpdateTimeResultText(elapsedTime);
+                UpdateTimeResultText(levelMaxTime - elapsedTime);
             }
         }
         else
         {
             PlaySoundFX(mismatchSound, 0.8f);
-            firstFlippedCard.FlipCard();
-            secondFlippedCard.FlipCard();
+            firstFlippedCard.ResetCard(); // Resetear el estado de la carta
+            secondFlippedCard.ResetCard(); // Resetear el estado de la carta
         }
 
         firstFlippedCard = null;
@@ -258,11 +272,12 @@ public class GameManager : MonoBehaviour
 
     public void StartNextGameLevel()
     {
-        if (gameLevel < maxLevel) { 
+        if (gameLevel < maxLevel)
+        {
             gameLevel++; // Incrementar el índice del nivel de juego
             InitializeGameLevel();
             StartGame();
-        }       
+        }
         else { Debug.Log("There are no more game levels."); }
     }
 
@@ -274,6 +289,7 @@ public class GameManager : MonoBehaviour
         musicAudioSource.loop = playLoop;
         musicAudioSource.Play();
     }
+
     void StopMusic()
     {
         musicAudioSource.Stop();
@@ -287,7 +303,6 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator CountdownCoroutine()
     {
-
         UICountdown.SetActive(false);
         for (int count = (int)initialShowTimeSeconds; count > 0; count--)
         {
@@ -307,6 +322,25 @@ public class GameManager : MonoBehaviour
 
     void LevelFailed()
     {
+        UIDefeated.SetActive(true);
+        UITimer.SetActive(false);
+        StopMusic();
+        instantiatedCards.Clear();
+        foreach (var card in FindObjectsOfType<Card>())
+        {
+            Destroy(card.gameObject);
+        }
+    }
 
+    public void RestartLevel()
+    {
+        InitializeGameLevel();
+        StartGame();
+    }
+
+    public void QuitGame()
+    {
+        Debug.Log("Quitting game...");
+        Application.Quit();
     }
 }

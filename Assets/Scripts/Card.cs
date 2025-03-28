@@ -5,25 +5,26 @@ public class Card : MonoBehaviour
 {
     [SerializeField] public SpriteRenderer frontSpriteRenderer;
     [SerializeField] public SpriteRenderer backSpriteRenderer;
-    public float rotationSpeed = 2f; // Velocidad de la rotación
+    public float rotationSpeed = 2f;
     private bool isRotating = false;
     private GameManager gameManager;
+    public bool isFlipped = false; //Variable para controlar si la carta está volteada
 
     private void Start()
     {
         gameManager = FindObjectOfType<GameManager>();
     }
- 
+
     public void PlayerFlipsCard()
     {
-        if (gameManager.playerCanClick)
+        if (gameManager.playerCanClick && !isFlipped) // Evita voltear cartas ya descubiertas
         {
             SetFlippedCard();
             FlipCard();
             gameManager.PlaySoundFX(gameManager.clickSound, 0.5f);
         }
     }
-    
+
     public void SetFlippedCard()
     {
         gameManager.CardFlipped(this);
@@ -53,5 +54,16 @@ public class Card : MonoBehaviour
 
         transform.rotation = endRotation;
         isRotating = false;
+        Debug.Log("RotateSmoothly() marca la carta como volteada o no");
+        isFlipped = !isFlipped; // Marca la carta como volteada o no
+    }
+
+    public void ResetCard() 
+    {
+        if (isFlipped)
+        {
+            Debug.Log("ResetCard() ejecutando FlipCard()");
+            FlipCard();
+        }
     }
 }
