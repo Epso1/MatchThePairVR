@@ -43,6 +43,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] Text timerText;
     [SerializeField] GameObject UICountdown;
     [SerializeField] Text countdownText;
+    [SerializeField] GameObject UIDataManagement;
 
     [Header("Private variables")]
     [HideInInspector] public bool playerCanClick = false;
@@ -81,6 +82,7 @@ public class GameManager : MonoBehaviour
     private void InitializeGameLevel()
     {
         // Desactivar UI
+        UIDataManagement.SetActive(false);
         UIVictory.SetActive(false);
         UIGetReady.SetActive(false);
         UICountdown.SetActive(false);
@@ -217,7 +219,7 @@ public class GameManager : MonoBehaviour
         currentCards = new Sprite[initialPairs * 2];
         CreateDeck();
         StartCoroutine(ShowCardsTemporarily());
-        UIStart.SetActive(false);
+        UIDataManagement.SetActive(false);
         matchCount = 0;
     }
 

@@ -54,7 +54,6 @@ public class Card : MonoBehaviour
 
         transform.rotation = endRotation;
         isRotating = false;
-        Debug.Log("RotateSmoothly() marca la carta como volteada o no");
         isFlipped = !isFlipped; // Marca la carta como volteada o no
     }
 

@@ -1,113 +1,169 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
-using System;
+using UnityEngine.UI;
+
 
 public class DataManager : MonoBehaviour
 {
-    public static DataManager Instance;
+    // Número total de slots de guardado
+    private int totalSlots = 6;
 
-    private DataManager instance { get; set; }
-    public PlayerData playerData = new PlayerData();
+    // Arreglo de botones asignados desde la interfaz
+    [Header("UI")]
+    [SerializeField] Button[] slotButtons;
+    [SerializeField] TextMeshProUGUI[] slotButtonsTexts;
+    [SerializeField] Text infoText; // Texto de mensaje general (por ejemplo, "Select a game or create a new one")
 
-    void Awake()
+
+    [Header("GameManager")]
+    [SerializeField] GameManager gameManager; // Referencia al GameManager para acceder a sus métodos
+
+    // Variable para mantener la partida cargada
+    public PlayerData currentPlayerData;
+
+    // Key base para acceder a los datos en PlayerPrefs
+    private string slotKeyBase = "Slot";
+
+    private void Start()
     {
-        if (instance == null) 
-        { 
-            instance = this;
-        }
-        else { Destroy (this); }        
-    }
+        // Actualizar el texto de la interfaz
+        if (infoText != null)
+            infoText.text = "Please, select an EMPTY slot to create a game or select a slot to load.";
 
-    void Start()
-    {
-        playerData.AddOrUpdateLevelTime(1, 120.5f); // Nivel 1 completado en 120.5 segundos
-        playerData.AddOrUpdateLevelTime(2, 95.3f);  // Nivel 2 completado en 95.3 segundos
-        playerData.AddOrUpdateLevelTime(3, 150.0f); // Nivel 3 completado en 150.0 segundos
-
-        foreach (var item in playerData.GetAllLevelTimes())
+        // Configurar cada botón de slot
+        for (int i = 0; i < totalSlots; i++)
         {
-            Debug.Log($"Stage {item.Key} - Time: {item.Value}");
+            int index = i;
+            // Añadir listener al botón
+            slotButtons[i].onClick.AddListener(() => OnSlotButtonClicked(index));
+            // Actualizar el texto del botón según si hay datos o no
+            UpdateSlotButtonText(index);
         }
     }
+
+    // Actualiza el texto del botón según si hay partida guardada o está vacío
+    private void UpdateSlotButtonText(int slotIndex)
+    {
+        string key = slotKeyBase + slotIndex;
+        TextMeshProUGUI buttonText = slotButtonsTexts[slotIndex];
+        if (PlayerPrefs.HasKey(key))
+        {
+            // Si hay datos guardados, se recupera el JSON y se muestra la fecha y hora
+            string json = PlayerPrefs.GetString(key);
+            PlayerData data = JsonUtility.FromJson<PlayerData>(json);
+            buttonText.text = $"{data.creationDate} {data.creationTime}";
+        }
+        else
+        {
+            // Si no hay datos, se muestra "EMPTY"
+            buttonText.text = "EMPTY";
+        }
+    }
+
+    // Método llamado cuando se hace clic en un botón de slot
+    public void OnSlotButtonClicked(int slotIndex)
+    {
+        string key = slotKeyBase + slotIndex;
+        Debug.Log("Click");
+
+        if (!PlayerPrefs.HasKey(key))
+        {
+            // No hay partida guardada en este slot, se crea una nueva
+            currentPlayerData = new PlayerData();
+            string json = JsonUtility.ToJson(currentPlayerData);
+            PlayerPrefs.SetString(key, json);
+            PlayerPrefs.Save();
+
+            // Mostrar mensaje en consola o mediante interfaz
+            Debug.Log("Game created successfully");
+            if (infoText != null)
+                infoText.text = "Game created successfully";
+
+            // Actualizar el botón para mostrar la fecha y hora de creación
+            UpdateSlotButtonText(slotIndex);
+
+        }
+        else
+        {
+            // Existe una partida, se carga la información en currentPlayerData
+            string json = PlayerPrefs.GetString(key);
+            currentPlayerData = JsonUtility.FromJson<PlayerData>(json);
+
+            // Puedes agregar aquí lógica adicional para cargar la partida en la escena
+            Debug.Log($"Game loaded: {currentPlayerData.creationDate} {currentPlayerData.creationTime}");
+            if (infoText != null)
+                infoText.text = "Game loaded successfully";
+        }
+        StartCoroutine(StartGameCoroutine());
+    }
+
+    // Método opcional para actualizar y guardar la partida actual (por ejemplo, tras jugar un nivel)
+    public void UpdateCurrentGameData()
+    {
+        if (currentPlayerData != null)
+        {
+            // Lógica para actualizar los datos (añadir nuevos LevelData, actualizar etc.)
+            string key = FindSlotKeyForCurrentGame();
+
+            if (!string.IsNullOrEmpty(key))
+            {
+                string json = JsonUtility.ToJson(currentPlayerData);
+                PlayerPrefs.SetString(key, json);
+                PlayerPrefs.Save();
+                Debug.Log("Game data updated and saved.");
+            }
+        }
+    }
+    private IEnumerator StartGameCoroutine()
+    {
+        yield return new WaitForSeconds(3f);
+        gameManager.StartGame();
+    }
+
+    // Encuentra la key del slot en el que se cargó la partida actual (según la fecha y hora de creación)
+    // Nota: Este método es un ejemplo si quieres implementar la actualización de datos, pudiendo guardarse el índice de slot actual.
+    private string FindSlotKeyForCurrentGame()
+    {
+        for (int i = 0; i < totalSlots; i++)
+        {
+            string key = slotKeyBase + i;
+            if (PlayerPrefs.HasKey(key))
+            {
+                string json = PlayerPrefs.GetString(key);
+                PlayerData data = JsonUtility.FromJson<PlayerData>(json);
+                if (data.creationDate == currentPlayerData.creationDate &&
+                    data.creationTime == currentPlayerData.creationTime)
+                {
+                    return key;
+                }
+            }
+        }
+        return "";
+    }
+}
+
+[Serializable]
+public class LevelData
+{
+    public int level;    // Nivel de juego
+    public string time;  // Tiempo empleado para completar el nivel
 }
 
 [Serializable]
 public class PlayerData
 {
-    public string playerName { get; private set; }
-    private Dictionary<int, float> levelCompletionTimes = new Dictionary<int, float>();
+    public string creationDate; // Fecha de creación de la partida
+    public string creationTime; // Hora de creación de la partida
+    public List<LevelData> levelData; // Lista de datos de nivel
 
-    public PlayerData(){}
-
-    public PlayerData(string playerName, Dictionary<int, float> levelCompletionTimes) 
+    // Constructor para inicializar una nueva partida
+    public PlayerData()
     {
-        this.playerName = playerName;
-        this.levelCompletionTimes = levelCompletionTimes;
-    }
-
-    // Método para agregar o actualizar el tiempo de un nivel
-    public void AddOrUpdateLevelTime(int sceneIndex, float completionTime)
-    {
-        if (levelCompletionTimes.ContainsKey(sceneIndex))
-        {
-            // Si el nivel ya existe, comprueba si el nuevo tiempo es menor o igual al almacenado
-            if (completionTime <= levelCompletionTimes[sceneIndex])
-            {
-                // Actualiza el tiempo si es mejor o igual
-                levelCompletionTimes[sceneIndex] = completionTime;
-                Debug.Log($"Tiempo actualizado para el nivel {sceneIndex}: {completionTime} segundos.");
-            }
-            else
-            {
-                // Si el tiempo no es mejor, muestra un mensaje informativo
-                Debug.Log($"El tiempo proporcionado ({completionTime} segundos) no es mejor que el tiempo actual ({levelCompletionTimes[sceneIndex]} segundos) para el nivel {sceneIndex}. No se ha actualizado.");
-            }
-        }
-        else
-        {
-            // Si el nivel no existe, lo añade al diccionario
-            levelCompletionTimes.Add(sceneIndex, completionTime);
-            Debug.Log($"Nuevo tiempo registrado para el nivel {sceneIndex}: {completionTime} segundos.");
-        }
-    }
-
-    // Método para obtener el tiempo de un nivel específico
-    public float GetLevelTime(int sceneIndex)
-    {
-        if (levelCompletionTimes.ContainsKey(sceneIndex))
-        {
-            return levelCompletionTimes[sceneIndex];
-        }
-        else
-        {
-            // Si el nivel no existe, devuelve -1 como valor predeterminado
-            return -1f;
-        }
-    }
-
-    // Método para obtener todos los niveles completados
-    public Dictionary<int, float> GetAllLevelTimes()
-    {
-        return levelCompletionTimes;
-    }
-
-    // Método para borrar todos los datos
-    public void ClearAllData()
-    {
-        levelCompletionTimes.Clear();
-    }
-
-    // Método para establecer el nombre del jugador
-    public void SetPlayerName(string playerName)
-    {
-        this.playerName = playerName;
+        creationDate = DateTime.Now.ToString("dd/MM/yyyy");
+        creationTime = DateTime.Now.ToString("HH:mm:ss");
+        levelData = new List<LevelData>(); // Puedes agregar elementos iniciales si es necesario
     }
 }
-
-[Serializable]
-public class PlayerDataList
-{
-    List<PlayerData> playerDataList = new List<PlayerData>();
-}
-
