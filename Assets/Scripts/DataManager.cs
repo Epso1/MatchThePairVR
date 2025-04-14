@@ -100,14 +100,39 @@ public class DataManager : MonoBehaviour
         StartCoroutine(StartGameCoroutine());
     }
 
-    // Método opcional para actualizar y guardar la partida actual (por ejemplo, tras jugar un nivel)
-    public void UpdateCurrentGameData()
+    // Método para actualizar y guardar la partida actual (por ejemplo, tras jugar un nivel)
+    public void UpdateCurrentGameData(int currentLevel, float newTime)
     {
         if (currentPlayerData != null)
         {
-            // Lógica para actualizar los datos (añadir nuevos LevelData, actualizar etc.)
-            string key = FindSlotKeyForCurrentGame();
+            // Buscar si ya existe LevelData para el nivel actual
+            LevelData existingLevelData = currentPlayerData.levelData.Find(ld => ld.level == currentLevel);
 
+            if (existingLevelData == null)
+            {
+                // Si no existe, se agrega un nuevo registro para el nivel actual
+                LevelData newLevelData = new LevelData();
+                newLevelData.level = currentLevel;
+                newLevelData.time = newTime;
+                currentPlayerData.levelData.Add(newLevelData);
+                Debug.Log($"Nuevo registro creado para el nivel {currentLevel} con tiempo: {newTime}");
+            }
+            else
+            {
+                // Si existe, se compara el tiempo conseguido nuevo con el registrado previamente
+                float savedTime = existingLevelData.time;               
+                if (newTime <= savedTime)
+                {
+                    existingLevelData.time = newTime;
+                    Debug.Log($"Tiempo actualizado para el nivel {currentLevel}: {newTime} (anteriormente {savedTime})");
+                }
+                else
+                {
+                    Debug.Log($"No se actualiza el tiempo para el nivel {currentLevel} porque el tiempo conseguido ({newTime}) supera el registrado ({savedTime}).");
+                }     
+            }
+            // Encontrar la key del slot en el que se cargó la partida actual para guardar la actualización
+            string key = FindSlotKeyForCurrentGame();
             if (!string.IsNullOrEmpty(key))
             {
                 string json = JsonUtility.ToJson(currentPlayerData);
@@ -117,6 +142,7 @@ public class DataManager : MonoBehaviour
             }
         }
     }
+
     private IEnumerator StartGameCoroutine()
     {
         yield return new WaitForSeconds(3f);
@@ -149,7 +175,7 @@ public class DataManager : MonoBehaviour
 public class LevelData
 {
     public int level;    // Nivel de juego
-    public string time;  // Tiempo empleado para completar el nivel
+    public float time;  // Tiempo empleado para completar el nivel
 }
 
 [Serializable]

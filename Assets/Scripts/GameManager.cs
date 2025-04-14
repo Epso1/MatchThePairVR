@@ -44,6 +44,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject UICountdown;
     [SerializeField] Text countdownText;
     [SerializeField] GameObject UIDataManagement;
+    [SerializeField] public Text bestTimeText;
 
     [Header("Private variables")]
     [HideInInspector] public bool playerCanClick = false;
@@ -57,9 +58,12 @@ public class GameManager : MonoBehaviour
     int gameLevel = 1;
     int maxLevel = 4;
     float levelMaxTime = 0f;
+    DataManager dataManager;
+    bool gameStarted;
 
     void Start()
     {
+        dataManager = FindObjectOfType<DataManager>();
         InitializeGameLevel();  // Inicializa el nivel
     }
 
@@ -89,12 +93,13 @@ public class GameManager : MonoBehaviour
         UITimer.SetActive(false);
         UIDefeated.SetActive(false);
 
-        if (gameLevel == 1) // Reproducir la música de introducción y activar UIStart si es el primer nivel de juego
+        if (gameLevel == 1 && !gameStarted) // Reproducir la música de introducción y activar UIStart si es el primer nivel de juego
         {
             UIStart.SetActive(true);
             PlayMusic(introMusic, 0.5f, true);
+            gameStarted = true;
         }
-        else // Incrementar la cantidad de parejas iniciales
+        else if (gameLevel != 1) // Incrementar la cantidad de parejas iniciales
         {
             initialPairs++;
         }
@@ -133,7 +138,21 @@ public class GameManager : MonoBehaviour
     {
         int minutes = Mathf.FloorToInt(time / 60);
         int seconds = Mathf.FloorToInt(time % 60);
-        timeResultText.text = "YOUR REMAINING TIME: " + string.Format("{0:0}:{1:00}", minutes, seconds);
+        timeResultText.text = "CURRENT TIME: " + string.Format("{0:0}:{1:00}", minutes, seconds);
+    }
+
+    private void UpdateBestTimeResultText(float time)
+    {
+        if (time <= 0)
+        {
+            timeResultText.text = "YOUR BEST TIME: -:--";
+        } 
+        else
+        {
+            int minutes = Mathf.FloorToInt(time / 60);
+            int seconds = Mathf.FloorToInt(time % 60);
+            bestTimeText.text = "YOUR BEST TIME: " + string.Format("{0:0}:{1:00}", minutes, seconds);
+        }        
     }
 
     void CreateDeck()
@@ -257,7 +276,18 @@ public class GameManager : MonoBehaviour
                 UITimer.SetActive(false);
                 StopTimer();
                 UIVictory.SetActive(true);
-                UpdateTimeResultText(levelMaxTime - elapsedTime);
+
+                LevelData existingLevelData = dataManager.currentPlayerData.levelData.Find(ld => ld.level == gameLevel);
+
+                if (existingLevelData != null)
+                {
+                    float bestTime = existingLevelData.time;
+                    UpdateBestTimeResultText(bestTime);
+                }
+                else { UpdateBestTimeResultText(0); }
+
+                dataManager.UpdateCurrentGameData(gameLevel, elapsedTime);
+                UpdateTimeResultText(elapsedTime);               
             }
         }
         else
@@ -324,6 +354,7 @@ public class GameManager : MonoBehaviour
 
     void LevelFailed()
     {
+        StopAllCoroutines();
         UIDefeated.SetActive(true);
         UITimer.SetActive(false);
         StopMusic();
