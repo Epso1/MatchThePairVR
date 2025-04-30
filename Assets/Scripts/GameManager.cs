@@ -13,11 +13,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject explosionPrefab;
 
     [Header("Game settings")]
-    [SerializeField] int initialPairs = 5;
+    [SerializeField] int initialPairs = 4;
     [SerializeField] int columns = 5; // Número de columnas en la cuadrícula
     [SerializeField] float spacing = 0.5f; // Espaciado entre cartas
     [SerializeField] float initialPauseTime = 2f;
     [SerializeField] int initialShowTimeSeconds = 5;
+    [SerializeField] float levelTimeMultiplier = 10f; // Multiplica las parejas por esta cifra para determinar el tiempo para completar cada nivel
 
     [Header("Audio")]
     [SerializeField] public AudioClip clickSound;
@@ -29,6 +30,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] AudioClip introMusic;
     [SerializeField] AudioClip sceneMusic;
     [SerializeField] AudioClip victoryMusic;
+    [SerializeField] AudioClip defeatMusic;
 
     [SerializeField] AudioSource FXAudioSource;
     [SerializeField] AudioSource musicAudioSource;
@@ -55,8 +57,8 @@ public class GameManager : MonoBehaviour
     int matchCount = 0;
     float elapsedTime = 0f;
     bool isTimeRunning = false;
-    int gameLevel = 1;
-    int maxLevel = 4;
+    [SerializeField] int gameLevel = 1;
+    int maxLevel = 11;
     float levelMaxTime = 0f;
     DataManager dataManager;
     bool gameStarted;
@@ -103,12 +105,10 @@ public class GameManager : MonoBehaviour
         {
             initialPairs++;
         }
-
-        // Establecer el número de columnas
-        columns = initialPairs;
-
+                 
+        columns = initialPairs;  // Establecer el número de columnas
         initialShowTimeSeconds = initialPairs; // Establecer el tiempo de previsualización de las cartas con el valor de la cantidad de parejas 
-        levelMaxTime = initialPairs * 5; // Establecer el tiempo máximo para completar el nivel
+        levelMaxTime = initialPairs * levelTimeMultiplier; // Establecer el tiempo máximo para completar el nivel
     }
 
     public void StartTimer()
@@ -186,14 +186,27 @@ public class GameManager : MonoBehaviour
     void InstantiateDeck()
     {
         int totalRows = Mathf.CeilToInt((float)currentCards.Length / columns);
-        int totalCols = Mathf.Min(columns, currentCards.Length);
+        int totalCols = Mathf.Min(columns, currentCards.Length);             
 
+        // Establecer la escala de las cartas
+        Vector3 cardScale;
+        if (initialPairs >= 10)
+        {
+            cardScale = new Vector3(1f, 1f, 0.5f);
+            spacing /= 2f; // Reducir el espaciado para cartas más pequeñas
+        }
+        else
+        {
+            cardScale = new Vector3(2f, 2f, 1f);
+        }
+        // Calcular el offset para centrar las cartas
         float offsetX = (totalCols - 1) * spacing * 0.5f;
         float offsetY = (totalRows - 1) * spacing * 0.5f;
 
         for (int i = 0; i < currentCards.Length; i++)
         {
             GameObject newCard = Instantiate(cardPrefab, cardParent);
+            newCard.transform.localScale = cardScale; // Aplicar escala a la carta
             Card cardComponent = newCard.GetComponent<Card>();
             cardComponent.frontSpriteRenderer.sprite = currentCards[i];
 
@@ -271,23 +284,7 @@ public class GameManager : MonoBehaviour
 
             if (matchCount == initialPairs)
             {
-                StopMusic();
-                PlayMusic(victoryMusic, 0.5f, false);
-                UITimer.SetActive(false);
-                StopTimer();
-                UIVictory.SetActive(true);
-
-                LevelData existingLevelData = dataManager.currentPlayerData.levelData.Find(ld => ld.level == gameLevel);
-
-                if (existingLevelData != null)
-                {
-                    float bestTime = existingLevelData.time;
-                    UpdateBestTimeResultText(bestTime);
-                }
-                else { UpdateBestTimeResultText(0); }
-
-                dataManager.UpdateCurrentGameData(gameLevel, elapsedTime);
-                UpdateTimeResultText(elapsedTime);               
+                LevelCompleted();             
             }
         }
         else
@@ -326,7 +323,10 @@ public class GameManager : MonoBehaviour
     {
         musicAudioSource.Stop();
     }
-
+    public void PlayClickSound()
+    {
+        PlaySoundFX(clickSound, 0.5f);
+    }
     public void PlaySoundFX(AudioClip soundFX, float volume)
     {
         FXAudioSource.volume = volume;
@@ -351,10 +351,31 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(1);
         UICountdown.SetActive(false);
     }
+    void LevelCompleted()
+    {
+        StopMusic();
+        PlayMusic(victoryMusic, 0.5f, false);
+        UITimer.SetActive(false);
+        StopTimer();
+        UIVictory.SetActive(true);
 
+        LevelData existingLevelData = dataManager.currentPlayerData.levelData.Find(ld => ld.level == gameLevel);
+
+        if (existingLevelData != null)
+        {
+            float bestTime = existingLevelData.time;
+            UpdateBestTimeResultText(bestTime);
+        }
+        else { UpdateBestTimeResultText(0); }
+
+        dataManager.UpdateCurrentGameData(gameLevel, elapsedTime);
+        UpdateTimeResultText(elapsedTime);
+    }
     void LevelFailed()
     {
         StopAllCoroutines();
+        StopMusic();
+        PlayMusic(defeatMusic, 0.5f, false);
         UIDefeated.SetActive(true);
         UITimer.SetActive(false);
         StopMusic();
@@ -367,6 +388,10 @@ public class GameManager : MonoBehaviour
 
     public void RestartLevel()
     {
+        if (gameLevel > 1)
+        {
+            initialPairs--; // Decrementar el número de parejas para luego incrementarlo al inicializar el nivel
+        }
         InitializeGameLevel();
         StartGame();
     }

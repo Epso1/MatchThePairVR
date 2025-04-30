@@ -16,7 +16,8 @@ public class DataManager : MonoBehaviour
     [SerializeField] Button[] slotButtons;
     [SerializeField] TextMeshProUGUI[] slotButtonsTexts;
     [SerializeField] Text infoText; // Texto de mensaje general (por ejemplo, "Select a game or create a new one")
-
+    [SerializeField] AudioClip successSound; // Sonido de éxito al crear una partida
+    [SerializeField] GameObject explosionPrefab; // Prefab de explosión para efectos visuales
 
     [Header("GameManager")]
     [SerializeField] GameManager gameManager; // Referencia al GameManager para acceder a sus métodos
@@ -31,7 +32,7 @@ public class DataManager : MonoBehaviour
     {
         // Actualizar el texto de la interfaz
         if (infoText != null)
-            infoText.text = "Please, select an EMPTY slot to create a game or select a slot to load.";
+            infoText.text = $"Please, select an EMPTY slot to create a game \n or select a slot with data to load.";
 
         // Configurar cada botón de slot
         for (int i = 0; i < totalSlots; i++)
@@ -67,7 +68,6 @@ public class DataManager : MonoBehaviour
     public void OnSlotButtonClicked(int slotIndex)
     {
         string key = slotKeyBase + slotIndex;
-        Debug.Log("Click");
 
         if (!PlayerPrefs.HasKey(key))
         {
@@ -77,27 +77,22 @@ public class DataManager : MonoBehaviour
             PlayerPrefs.SetString(key, json);
             PlayerPrefs.Save();
 
-            // Mostrar mensaje en consola o mediante interfaz
-            Debug.Log("Game created successfully");
-            if (infoText != null)
-                infoText.text = "Game created successfully";
-
-            // Actualizar el botón para mostrar la fecha y hora de creación
-            UpdateSlotButtonText(slotIndex);
-
+            infoText.text = "Game created successfully";  // Actualizar el texto de información            
+            UpdateSlotButtonText(slotIndex); // Actualizar el botón para mostrar la fecha y hora de creación          
+           
         }
         else
         {
             // Existe una partida, se carga la información en currentPlayerData
             string json = PlayerPrefs.GetString(key);
-            currentPlayerData = JsonUtility.FromJson<PlayerData>(json);
-
-            // Puedes agregar aquí lógica adicional para cargar la partida en la escena
-            Debug.Log($"Game loaded: {currentPlayerData.creationDate} {currentPlayerData.creationTime}");
-            if (infoText != null)
-                infoText.text = "Game loaded successfully";
+            currentPlayerData = JsonUtility.FromJson<PlayerData>(json); 
+            
+            infoText.text = $"Game loaded: {currentPlayerData.creationDate} {currentPlayerData.creationTime}"; // Actualizar el texto de información                                                                  
         }
-        StartCoroutine(StartGameCoroutine());
+
+        gameManager.PlaySoundFX(successSound, 1f); ; // Reproducir sonido de éxito
+        GameObject explosion = Instantiate(explosionPrefab, infoText.transform.position, Quaternion.identity);  // Instanciar el prefab de explosión en la posición del texto       
+        StartCoroutine(StartGameCoroutine()); // Iniciar el juego después de un breve retraso
     }
 
     // Método para actualizar y guardar la partida actual (por ejemplo, tras jugar un nivel)

@@ -62,11 +62,12 @@ MonoBehaviour:
   cardPrefab: {fileID: 5637464111694728669, guid: 2cb4d6d3e5e28de43847d00d288e083d, type: 3}
   cardParent: {fileID: 0}
   explosionPrefab: {fileID: 7368311503550883571, guid: 5d2e095fa1516224a891de3b17a6585a, type: 3}
-  initialPairs: 5
+  initialPairs: 4
   columns: 5
   spacing: 0.8
   initialPauseTime: 2
-  initialShowTime: 5
+  initialShowTimeSeconds: 5
+  levelTimeMultiplier: 10
   clickSound: {fileID: 8300000, guid: fe3d44841015f9e4c86eef4a47026ede, type: 3}
   matchSound: {fileID: 8300000, guid: 73a9a09c110e61442966147e715c5a99, type: 3}
   mismatchSound: {fileID: 8300000, guid: 842e9e07bb128334c91a5548c7858a98, type: 3}
@@ -75,14 +76,19 @@ MonoBehaviour:
   introMusic: {fileID: 8300000, guid: d0d377bb7e371d14b8749151269b5ec9, type: 3}
   sceneMusic: {fileID: 8300000, guid: fb32039689d477a449eb45f372d23fac, type: 3}
   victoryMusic: {fileID: 8300000, guid: 56acee33f464a8f45bbca4948612380d, type: 3}
+  defeatMusic: {fileID: 8300000, guid: d243c494afc12544daeb7d66d2d32e29, type: 3}
   FXAudioSource: {fileID: 0}
   musicAudioSource: {fileID: 0}
   UIStart: {fileID: 0}
   UIVictory: {fileID: 0}
+  UIDefeated: {fileID: 0}
   timeResultText: {fileID: 0}
   UIGetReady: {fileID: 0}
   UITimer: {fileID: 0}
   timerText: {fileID: 0}
   UICountdown: {fileID: 0}
   countdownText: {fileID: 0}
+  UIDataManagement: {fileID: 0}
+  bestTimeText: {fileID: 0}
   playerCanClick: 0
+  gameLevel: 1
