@@ -18,6 +18,7 @@ public class DataManager : MonoBehaviour
     [SerializeField] Text infoText; // Texto de mensaje general (por ejemplo, "Select a game or create a new one")
     [SerializeField] AudioClip successSound; // Sonido de éxito al crear una partida
     [SerializeField] GameObject explosionPrefab; // Prefab de explosión para efectos visuales
+    [SerializeField] Transform explosionPosition;
 
     [Header("GameManager")]
     [SerializeField] GameManager gameManager; // Referencia al GameManager para acceder a sus métodos
@@ -89,9 +90,12 @@ public class DataManager : MonoBehaviour
             
             infoText.text = $"Game loaded: {currentPlayerData.creationDate} {currentPlayerData.creationTime}"; // Actualizar el texto de información                                                                  
         }
-
+        foreach (Button button in slotButtons)
+        {
+            button.enabled = false;
+        }
         gameManager.PlaySoundFX(successSound, 1f); ; // Reproducir sonido de éxito
-        GameObject explosion = Instantiate(explosionPrefab, infoText.transform.position, Quaternion.identity);  // Instanciar el prefab de explosión en la posición del texto       
+        GameObject explosion = Instantiate(explosionPrefab, explosionPosition.position, Quaternion.identity);  // Instanciar el prefab de explosión en la posición del texto       
         StartCoroutine(StartGameCoroutine()); // Iniciar el juego después de un breve retraso
     }
 
@@ -141,6 +145,10 @@ public class DataManager : MonoBehaviour
     private IEnumerator StartGameCoroutine()
     {
         yield return new WaitForSeconds(3f);
+        foreach (Button button in slotButtons)
+        {
+            button.enabled = true;
+        }
         gameManager.StartGame();
     }
 

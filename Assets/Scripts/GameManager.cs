@@ -47,6 +47,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] Text countdownText;
     [SerializeField] GameObject UIDataManagement;
     [SerializeField] public Text bestTimeText;
+    [SerializeField] GameObject UIGameFinished;
 
     [Header("Private variables")]
     [HideInInspector] public bool playerCanClick = false;
@@ -58,7 +59,7 @@ public class GameManager : MonoBehaviour
     float elapsedTime = 0f;
     bool isTimeRunning = false;
     [SerializeField] int gameLevel = 1;
-    int maxLevel = 11;
+    int maxLevel = 6;
     float levelMaxTime = 0f;
     DataManager dataManager;
     bool gameStarted;
@@ -94,6 +95,7 @@ public class GameManager : MonoBehaviour
         UICountdown.SetActive(false);
         UITimer.SetActive(false);
         UIDefeated.SetActive(false);
+        UIGameFinished.SetActive(false);
 
         if (gameLevel == 1 && !gameStarted) // Reproducir la música de introducción y activar UIStart si es el primer nivel de juego
         {
@@ -307,7 +309,13 @@ public class GameManager : MonoBehaviour
             InitializeGameLevel();
             StartGame();
         }
-        else { Debug.Log("There are no more game levels."); }
+        else 
+        { 
+            Debug.Log("There are no more game levels.");
+            StopAllCoroutines();
+            UIVictory.SetActive(false);
+            UIGameFinished.SetActive(true);
+        }
     }
 
     void PlayMusic(AudioClip musicClip, float volume, bool playLoop)
@@ -378,7 +386,6 @@ public class GameManager : MonoBehaviour
         PlayMusic(defeatMusic, 0.5f, false);
         UIDefeated.SetActive(true);
         UITimer.SetActive(false);
-        StopMusic();
         instantiatedCards.Clear();
         foreach (var card in FindObjectsOfType<Card>())
         {
@@ -394,6 +401,14 @@ public class GameManager : MonoBehaviour
         }
         InitializeGameLevel();
         StartGame();
+    }
+
+    public void ToMainMenu()
+    {
+        gameStarted = false;
+        gameLevel = 1;
+        initialPairs = 4;
+        InitializeGameLevel();
     }
 
     public void QuitGame()
